@@ -22,9 +22,9 @@ class DynamoDBClient:
         table_name = os.getenv("AWS_TABLE", "waypoints")
         self.table = self.dynamodb.Table(table_name)
 
-    def put_item(self, waypoint):
+    def put_item(self, item):
         try:
-            response = self.table.put_item(Item=waypoint)
+            response = self.table.put_item(Item=item)
             logging.info(f"PutItem succeeded: {response}")
         except ClientError as e:
             logging.error(f"Error putting item: {e}")

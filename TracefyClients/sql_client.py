@@ -52,9 +52,6 @@ class SQLClient:
         return self.cursor.fetchone()
 
     def get_tables(self) -> list:
-        """
-        Fetches and returns a list of all tables in the database.
-        """
         self.cursor.execute("SHOW TABLES")
         tables = [table['Tables_in_' + os.getenv("REMOTE_MYSQL_DATABASE", "api")] for table in self.cursor.fetchall()]
 
@@ -67,18 +64,16 @@ class SQLClient:
         columns_info = self.fetch_all(query)
 
         if not columns_info:
-            return None  # Table does not exist
+            return None
 
-        # Extract column names and types
         column_definitions = []
         for column_info in columns_info:
             column_name = column_info['Field']
             column_type = column_info['Type']
-            if isinstance(column_type, bytes):  # Check if the type is in byte format
-                column_type = column_type.decode()  # Decode to string if necessary
+            if isinstance(column_type, bytes):
+                column_type = column_type.decode()
             column_definitions.append(f"{column_name} {column_type}")
 
-        # Create the SQL statement to drop the existing table and create a new one
         drop_table_sql = f"DROP TABLE IF EXISTS {table_name};\n"
         create_table_sql = f"CREATE TABLE {table_name} (\n"
         create_table_sql += ",\n".join(column_definitions)
