@@ -3,5 +3,4 @@ dist
 .env
 __pycache__
 pip_package_tracefy_clients.egg-info
-
 .idea/
