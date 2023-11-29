@@ -1,0 +1,9 @@
+name: mamster build
+on:
+  push:
+    branches: [ "master" ]
+jobs:
+
+  todo:
+    uses: tracefy/github-actions-workflows/.github/workflows/utilities-todo.yml@v1
+    secrets: inherit
