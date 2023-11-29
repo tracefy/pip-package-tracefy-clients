@@ -9,7 +9,7 @@ load_dotenv()
 
 class DynamoDBClient:
     def __init__(self):
-
+        self.table = None
         self.dynamodb = boto3.resource(
             'dynamodb',
             region_name=os.getenv("AWS_REGION", "eu-central-1"),
@@ -18,9 +18,6 @@ class DynamoDBClient:
             # locally use http://localhost:8000
             endpoint_url=os.getenv("AWS_DYNAMODB_ENDPOINT_URL", "https://dynamodb.eu-central-1.amazonaws.com")
         )
-
-        table_name = os.getenv("AWS_TABLE", "waypoints")
-        self.table = self.dynamodb.Table(table_name)
 
     def put_item(self, item):
         try:
