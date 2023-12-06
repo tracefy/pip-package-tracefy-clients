@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 import mysql.connector
+import threading
+import time
 
 load_dotenv()
 
@@ -20,6 +22,20 @@ class SQLClient:
             buffered=True,
             dictionary=True
         )
+
+    def start_keep_alive(self, interval=300):
+        self.keep_alive_thread = threading.Thread(target=self._keep_alive, args=(interval,), daemon=True)
+        self.keep_alive_thread.start()
+
+    def _keep_alive(self, interval):
+        while True:
+            try:
+                self.db.ping(reconnect=True, attempts=3, delay=5)
+                print("Database pinged to keep the connection alive.")
+            except Exception as e:
+                print(f"Error keeping the database alive: {e}")
+
+            time.sleep(interval)
 
     def log(self):
         print("Query {}".format(self.cursor.statement))
