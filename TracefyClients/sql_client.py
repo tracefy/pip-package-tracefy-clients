@@ -11,17 +11,35 @@ class SQLClient:
 
     def __init__(self):
         self.db = mysql.connector.connect(
-            host=os.getenv("MYSQL_HOST", "localhost"),
-            user=os.getenv("MYSQL_USER", "mysql"),
-            password=os.getenv("MYSQL_PASSWORD", "mysql"),
-            database=os.getenv("MYSQL_DATABASE", "api"),
-            port=os.getenv("MYSQL_PORT", "3306"),
-            connection_timeout=os.getenv("MYSQL_CONNECTION_TIMEOUT", 180),
+            host=self.get_host(),
+            user=self.get_user(),
+            password=self.get_password(),
+            database=self.get_database(),
+            port=self.get_port(),
+            connection_timeout=self.get_connection_timeout(),
         )
         self.cursor = self.db.cursor(
             buffered=True,
             dictionary=True
         )
+
+    def get_connection_timeout(self) -> int:
+        return int(os.getenv("MYSQL_CONNECTION_TIMEOUT", 180))
+
+    def get_port(self) -> int:
+        return int(os.getenv("MYSQL_PORT", "3306"))
+
+    def get_user(self) -> str:
+        return os.getenv("MYSQL_USER", "mysql")
+
+    def get_password(self) -> str:
+        return os.getenv("MYSQL_PASSWORD", "mysql")
+
+    def get_database(self) -> str:
+        return os.getenv("MYSQL_DATABASE", "api")
+
+    def get_host(self) -> str:
+        return os.getenv("MYSQL_HOST", "localhost")
 
     def start_keep_alive(self, interval=300):
         self.keep_alive_thread = threading.Thread(target=self._keep_alive, args=(interval,), daemon=True)
