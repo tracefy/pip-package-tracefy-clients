@@ -18,16 +18,16 @@ class RedisClient:
         )
 
     def get_host(self) -> str:
-        return os.getenv("REDIS_STREAM_ADDRESS", "localhost")
+        return os.getenv("REDIS_DB_ADDRESS", "localhost")
 
     def get_port(self) -> int:
-        return int(os.getenv("REDIS_STREAM_PORT", "6379"))
+        return int(os.getenv("REDIS_DB_PORT", "6379"))
 
     def get_username(self) -> str:
-        return os.getenv("REDIS_STREAM_USERNAME", "")
+        return os.getenv("REDIS_DB_USERNAME", "")
 
     def get_password(self) -> str:
-        return os.getenv("REDIS_STREAM_PASSWORD", "")
+        return os.getenv("REDIS_DB_PASSWORD", "")
 
     def get_client(self):
         return self.client
