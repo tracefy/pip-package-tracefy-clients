@@ -16,7 +16,7 @@ class SQSClient:
         )
 
     def get_endpoint_url(self) -> str:
-        return os.getenv("AWS_SQS_ENDPOINT_URL", "http://sqs.eu-central-1.amazonaws.com")
+        return os.getenv("AWS_SQS_ENDPOINT_URL", "https://sqs.eu-central-1.amazonaws.com")
 
     def get_region_name(self) -> str:
         return os.getenv("AWS_REGION", "eu-central-1")
