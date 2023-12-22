@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class SQSClient:
+class S3Client:
     def __init__(self):
         self.s3_bucket = self.get_bucket()
         session = boto3.Session(
