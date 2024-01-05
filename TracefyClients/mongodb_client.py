@@ -5,15 +5,29 @@ from pymongo import MongoClient
 
 class MongoDBClient(ABC):
     def __init__(self):
-        self.client = MongoClient(
-            host=self.get_host(),
-            port=self.get_port()
-        )
+        username = self.get_username()
+        password = self.get_password()
+        host = self.get_host()
+        port = self.get_port()
+        auth_source = self.get_auth_source()
+
+        mongo_uri = f"mongodb://{username}:{password}@{host}:{port}/{self.get_database_name()}?authSource={auth_source}"
+
+        self.client = MongoClient(mongo_uri)
         self.db = self.client.get_database(
             self.get_database_name()
         )
 
         self.collection = self.db.get_collection(self.get_collection_name())
+
+    def get_password(self) -> str:
+        return os.getenv("MONGO_INITDB_ROOT_PASSWORD")
+
+    def get_username(self) -> str:
+        return os.getenv("MONGO_INITDB_ROOT_USERNAME")
+
+    def get_auth_source(self) -> str:
+        return os.getenv("MONGO_AUTH_SOURCE", "admin")
 
     def get_database_name(self) -> str:
         return os.getenv("MONGO_DB_NAME", "DB")
