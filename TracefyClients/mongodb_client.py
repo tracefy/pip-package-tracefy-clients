@@ -9,12 +9,17 @@ class MongoDBClient(ABC):
             host=self.get_host(),
             port=self.get_port()
         )
-        self.db = self.client.get_database()
+        self.db = self.client.get_database(
+            self.get_database_name()
+        )
 
         self.collection = self.db.get_collection(self.get_collection_name())
 
+    def get_database_name(self) -> str:
+        return os.getenv("MONGO_DB_NAME", "DB")
+
     def get_collection_name(self) -> str:
-        return os.getenv("MONGO_DB_TABLE", "trips")
+        return os.getenv("MONGO_DB_TABLE", "table")
 
     def get_host(self) -> str:
         return os.getenv("MONGO_DB_HOST", "localhost")
