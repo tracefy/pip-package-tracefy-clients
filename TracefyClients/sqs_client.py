@@ -26,3 +26,6 @@ class SQSClient:
 
     def get_aws_secret_access_key(self) -> str:
         return os.getenv("AWS_SECRET_ACCESS_KEY")
+
+    def get_messages(self):
+        return self.get_queue().receive_messages(MessageAttributeNames=['All'])
