@@ -19,7 +19,10 @@ class MongoDBClient(ABC):
         )
 
         self.collection = self.db.get_collection(self.get_collection_name())
-
+        
+    def server_info(self):
+        return self.client.server_info()
+        
     def get_password(self) -> str:
         return os.getenv("MONGO_INITDB_ROOT_PASSWORD")
 
