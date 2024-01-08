@@ -17,18 +17,35 @@ class S3Client:
         )
         self.s3 = session.client('s3')
 
-    def add_to_bucket(self, key, data):
+    def _add_to_bucket(self, key, data, prefix: str = ""):
         current_date = datetime.datetime.now()
         year = current_date.year
         month = current_date.month
         day = current_date.day
+        formatted_path = prefix + self.get_formatted_path()
 
         self.s3.put_object(
             Bucket=self.s3_bucket,
-            Key=self.get_formatted_path(year, month, day, key),
+            Key=formatted_path,
             Body=json.dumps(data)
         )
-        print("{} : event processed".format(key))
+        print("{} : row processed".format(key))
+
+    def add_to_bucket(self, key, data):
+        self._add_to_bucket(
+            key=key,
+            data=data
+        )
+
+    def add_to_bucket_with_prefix(self, key, data, perfix: str):
+        self._add_to_bucket(
+            key=key,
+            data=data,
+            prefix=perfix
+        )
+
+    def get_formatted_path(self):
+        return f"{year}/{month:02d}/{day:02d}/{key}.json"
 
     def get_bucket(self) -> str:
         return os.getenv("S3_BUCKET")
@@ -41,6 +58,3 @@ class S3Client:
 
     def get_aws_secret_access_key(self) -> str:
         return os.getenv("AWS_SECRET_ACCESS_KEY")
-        
-    def get_formatted_path(self, year, month, day, key):
-        return f"{year}/{month:02d}/{day:02d}/{key}.json"
