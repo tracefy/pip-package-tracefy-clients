@@ -22,11 +22,10 @@ class S3Client:
         year = current_date.year
         month = current_date.month
         day = current_date.day
-        formatted_path = f"{year}/{month:02d}/{day:02d}/{key}.json"
 
         self.s3.put_object(
             Bucket=self.s3_bucket,
-            Key=formatted_path,
+            Key=self.get_formatted_path(),
             Body=json.dumps(data)
         )
         print("{} : event processed".format(key))
@@ -42,3 +41,6 @@ class S3Client:
 
     def get_aws_secret_access_key(self) -> str:
         return os.getenv("AWS_SECRET_ACCESS_KEY")
+        
+    def get_formatted_path(self):
+        return f"{year}/{month:02d}/{day:02d}/{key}.json"
