@@ -22,7 +22,7 @@ class S3Client:
         year = current_date.year
         month = current_date.month
         day = current_date.day
-        formatted_path = prefix + self.get_formatted_path()
+        formatted_path = prefix + self.get_formatted_path(year, month, day, key)
 
         self.s3.put_object(
             Bucket=self.s3_bucket,
@@ -44,7 +44,7 @@ class S3Client:
             prefix=perfix
         )
 
-    def get_formatted_path(self):
+    def get_formatted_path(self, year, month, day, key):
         return f"{year}/{month:02d}/{day:02d}/{key}.json"
 
     def get_bucket(self) -> str:
