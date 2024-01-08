@@ -29,3 +29,7 @@ class SQSClient:
 
     def get_messages(self):
         return self.get_queue().receive_messages(MessageAttributeNames=['All'])
+    
+    def add_to_queue(self, queue, data):
+        return queue.send_message(MessageBody=json.dumps(data))
+
