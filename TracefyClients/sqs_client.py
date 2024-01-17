@@ -1,5 +1,6 @@
 import os
 import gzip
+import base64
 import boto3
 import json
 
@@ -38,4 +39,5 @@ class SQSClient:
 
     def add_compressed_to_queue(self, queue, data):
         compressed = gzip.compress(json.dumps(data).encode('utf-8'))
-        return queue.send_message(MessageBody=compressed)
+        base_data = base64.b64encode(compressed).decode()
+        return queue.send_message(MessageBody=base_data)
