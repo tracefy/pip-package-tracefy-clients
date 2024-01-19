@@ -114,3 +114,13 @@ class SQLClient:
         create_table_sql += "\n);"
 
         return drop_table_sql + create_table_sql
+
+    def update(self, keys: tuple, values: tuple, table: str, condition: str):
+        key_val_pairs = [f"{key} = %s" for key in keys]
+        set_clause = ", ".join(key_val_pairs)
+        q = f"UPDATE {table} SET {set_clause} WHERE {condition}"
+        update_values = values + condition_values  # Add condition values to the update values
+        self.cursor.execute(q, update_values)
+        self.db.commit()
+        self.log()
+
