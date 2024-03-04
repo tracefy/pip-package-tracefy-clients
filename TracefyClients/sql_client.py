@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import mysql.connector
 import threading
 import time
+from util import get_logger
 
 load_dotenv()
 
@@ -22,6 +23,8 @@ class SQLClient:
             buffered=True,
             dictionary=True
         )
+        self.cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED")
+        self.logger = get_logger("sql_client")
 
     def get_connection_timeout(self) -> int:
         return int(os.getenv("MYSQL_CONNECTION_TIMEOUT", 180))
@@ -49,15 +52,15 @@ class SQLClient:
         while True:
             try:
                 self.db.ping(reconnect=True, attempts=3, delay=5)
-                print("Database pinged to keep the connection alive.")
+                self.logger.info("Database pinged to keep the connection alive.")
             except Exception as e:
-                print(f"Error keeping the database alive: {e}")
+                self.logger.error(f"Error keeping the database alive: {e}")
 
             time.sleep(interval)
 
     def log(self):
-        print("Query {}".format(self.cursor.statement))
-        print("Affected rows: {}".format(self.cursor.rowcount))
+        self.logger.info("Query {}".format(self.cursor.statement))
+        self.logger.info("Affected rows: {}".format(self.cursor.rowcount))
 
     def update(self, query: str, params: tuple):
         self.cursor.execute(query, params)
