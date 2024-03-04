@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import mysql.connector
 import threading
 import time
-from util import get_logger
+from TracefyClients.util import get_logger
 
 load_dotenv()
 
