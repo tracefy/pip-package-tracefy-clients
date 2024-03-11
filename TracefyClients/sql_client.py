@@ -6,6 +6,7 @@ import time
 from TracefyClients.util import get_logger
 
 load_dotenv()
+logger = get_logger("sql_client")
 
 
 class SQLClient:
@@ -24,7 +25,6 @@ class SQLClient:
             dictionary=True
         )
         self.cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED")
-        self.logger = get_logger("sql_client")
 
     def get_connection_timeout(self) -> int:
         return int(os.getenv("MYSQL_CONNECTION_TIMEOUT", 180))
@@ -52,15 +52,15 @@ class SQLClient:
         while True:
             try:
                 self.db.ping(reconnect=True, attempts=3, delay=5)
-                self.logger.info("Database pinged to keep the connection alive.")
+                logger.info("Database pinged to keep the connection alive.")
             except Exception as e:
-                self.logger.error(f"Error keeping the database alive: {e}")
+                logger.error(f"Error keeping the database alive: {e}")
 
             time.sleep(interval)
 
     def log(self):
-        self.logger.info("Query {}".format(self.cursor.statement))
-        self.logger.info("Affected rows: {}".format(self.cursor.rowcount))
+        logger.info("Query {}".format(self.cursor.statement))
+        logger.info("Affected rows: {}".format(self.cursor.rowcount))
 
     def update(self, query: str, params: tuple):
         self.cursor.execute(query, params)
