@@ -34,7 +34,9 @@ class SQLClient:
 
 
         self.pool = mysql.connector.pooling.MySQLConnectionPool(
-            pool_name=pool_name, pool_size=1, **db_config
+            pool_name=pool_name,
+            pool_size=self.get_pool_size(),
+            **db_config
         )
         self.pool.get_connection()
 
