@@ -62,10 +62,10 @@ class SQLClient:
 
         self.close_connection(connection, cursor)
 
-    def execute(self, query: str, multi=False):
+    def execute(self, query: str, params=(), multi=False):
         connection, cursor = self.get_connection()
 
-        cursor.execute(query, multi=multi)
+        cursor.execute(query, params=params, multi=multi)
         connection.commit()
         self.log(cursor)
 
