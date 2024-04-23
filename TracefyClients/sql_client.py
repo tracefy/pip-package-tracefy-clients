@@ -34,7 +34,8 @@ class SQLClient:
     def __enter__(self):
         # Get a connection from the pool
         self.connection = self.pool.get_connection()
-        self.cursor: MySQLCursorAbstract = self.connection.cursor()
+        self.cursor: MySQLCursorAbstract = self.connection.cursor(buffered=True, dictionary=True)
+        self.cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED")
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
