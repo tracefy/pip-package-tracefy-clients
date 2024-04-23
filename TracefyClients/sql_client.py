@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import mysql.connector
+from mysql.connector.abstracts import MySQLCursorAbstract
 import random
 from TracefyClients.util import get_logger
 
@@ -33,7 +34,7 @@ class SQLClient:
     def __enter__(self):
         # Get a connection from the pool
         self.connection = self.pool.get_connection()
-        self.cursor = self.connection.cursor()
+        self.cursor: MySQLCursorAbstract = self.connection.cursor()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
