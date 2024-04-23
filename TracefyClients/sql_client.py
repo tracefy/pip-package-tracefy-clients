@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract
 import random
+
+from mysql.connector.pooling import PooledMySQLConnection
 from TracefyClients.util import get_logger
 
 load_dotenv()
@@ -29,65 +31,87 @@ class SQLClient:
             pool_size=int(os.getenv("MYSQL_POOL_SIZE", "5")),
             **db_config
         )
-        self.pool.get_connection()
     
-    def __enter__(self):
-        # Get a connection from the pool
-        self.connection = self.pool.get_connection()
-        self.cursor: MySQLCursorAbstract = self.connection.cursor(buffered=True, dictionary=True)
-        return self
+    def get_connection(self):
+        """
+        Get a connection from the connection pool
+        """
+        connection = self.pool.get_connection()
+        cursor: MySQLCursorAbstract = connection.cursor(buffered=True, dictionary=True)
+        return connection, cursor
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        # Commit transactions if no exceptions, otherwise rollback
-        if exc_type is None:
-            self.connection.commit()
-        else:
-            self.connection.rollback()
-        
-        # Close the cursor and connection
-        self.cursor.close()
-        self.connection.close()
+    def close_connection(self, connection: PooledMySQLConnection, cursor: MySQLCursorAbstract):
+        """
+        Give back the cursor and connection tool the pool
+        """
+
+        cursor.close()
+        connection.close()
 
 
-    def log(self):
-        logger.info("Query {}".format(self.cursor.statement))
-        logger.info("Affected rows: {}".format(self.cursor.rowcount))
+    def log(self, cursor: MySQLCursorAbstract):
+        logger.info("Query {}".format(cursor.statement))
+        logger.info("Affected rows: {}".format(cursor.rowcount))
 
     def update(self, query: str, params: tuple):
+        connection, cursor = self.get_connection()
 
-        self.cursor.execute(query, params)
-        self.connection.commit()
-        self.log()
+        cursor.execute(query, params)
+        connection.commit()
+        self.log(cursor)
+
+        self.close_connection(connection, cursor)
 
     def execute(self, query: str, multi=False):
-        self.cursor.execute(query, multi=multi)
-        self.connection.commit()
-        self.log()
+        connection, cursor = self.get_connection()
+
+        cursor.execute(query, multi=multi)
+        connection.commit()
+        self.log(cursor)
+
+        self.close_connection(connection, cursor)
 
 
-    def fetch_all(self, query: str, params=()) -> dict:
-        self.cursor.execute(query, params)
-        return self.cursor.fetchall()
+    def fetch_all(self, query: str, params=()):
+        connection, cursor = self.get_connection()
 
+        cursor.execute(query, params)
+        data = cursor.fetchall()
+
+        self.close_connection(connection, cursor)
+        return data
 
     def insert(self, keys: tuple, values: tuple, table: str):
         key_str = ", ".join([f"`{key}`" for key in keys])  
         val_str = ", ".join(["%s"] * len(keys))
         q = f"INSERT INTO {table} ({key_str}) VALUES ({val_str})"
-        self.cursor.execute(q, values)
-        self.connection.commit()
-        self.log()
+        connection, cursor = self.get_connection()
 
-    def fetch_one(self, query: str, params=()) -> dict:
-        self.cursor.execute(query, params)
-        return self.cursor.fetchone()
+        cursor.execute(q, values)
+        connection.commit()
+        self.log(cursor)
+
+        self.close_connection(connection, cursor)
+
+    def fetch_one(self, query: str, params=()):
+        connection, cursor = self.get_connection()
+        cursor.execute(query, params)
+
+        data = cursor.fetchone()
+
+        self.close_connection(connection, cursor)
+        return data
 
 
     def get_tables(self) -> list:
-        self.cursor.execute("SHOW TABLES")
-        tables = [table['Tables_in_' + os.getenv("REMOTE_MYSQL_DATABASE", "api")] for table in self.cursor.fetchall()]
+        connection, cursor = self.get_connection()
+
+        cursor.execute("SHOW TABLES")
+        tables = [table['Tables_in_' + os.getenv("REMOTE_MYSQL_DATABASE", "api")] for table in cursor.fetchall()]
 
         tables = [b.decode() for b in tables]
+
+        self.close_connection(connection, cursor)
         return tables
 
     def get_create_table_sql(self, table_name: str) -> str | None:
