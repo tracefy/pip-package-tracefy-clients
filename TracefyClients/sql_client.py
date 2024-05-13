@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract
 import random
+import time
 
 from mysql.connector.pooling import PooledMySQLConnection
 from TracefyClients.util import get_logger
@@ -29,14 +30,25 @@ class SQLClient:
         self.pool = mysql.connector.pooling.MySQLConnectionPool(
             pool_name=pool_name,
             pool_size=int(os.getenv("MYSQL_POOL_SIZE", "5")),
+            pool_timeout=30,
             **db_config
         )
     
-    def get_connection(self):
+    def get_connection(self, max_retries=5, wait_interval=0.1):
         """
         Get a connection from the connection pool
         """
-        connection = self.pool.get_connection()
+        retries = 0
+        while retries < max_retries:
+            try:
+                connection = self.pool.get_connection()
+                break
+            except mysql.connector.errors.PoolError:
+                retries += 1
+                print(f"connection pool exausted! Retries: {retries} with timeout: {wait_interval} sec")
+                time.sleep(wait_interval)
+
+
         cursor: MySQLCursorAbstract = connection.cursor(buffered=True, dictionary=True)
         return connection, cursor
 
@@ -54,6 +66,7 @@ class SQLClient:
         logger.info("Affected rows: {}".format(cursor.rowcount))
 
     def update(self, query: str, params: tuple):
+        with self.pool.get_connection()
         connection, cursor = self.get_connection()
 
         cursor.execute(query, params)
