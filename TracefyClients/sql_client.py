@@ -30,7 +30,6 @@ class SQLClient:
         self.pool = mysql.connector.pooling.MySQLConnectionPool(
             pool_name=pool_name,
             pool_size=int(os.getenv("MYSQL_POOL_SIZE", "5")),
-            pool_timeout=30,
             **db_config
         )
     
