@@ -65,7 +65,6 @@ class SQLClient:
         logger.info("Affected rows: {}".format(cursor.rowcount))
 
     def update(self, query: str, params: tuple):
-        with self.pool.get_connection()
         connection, cursor = self.get_connection()
 
         cursor.execute(query, params)
