@@ -60,7 +60,7 @@ sql_client = SQLClient()
 # Execute a SQL query
 query = "SELECT * FROM users WHERE username = %s"
 params = ("john_doe",)
-esult = sql_client.fetch_one(query, params)
+result = sql_client.fetch_one(query, params)
 ```
 
 ## Configuration
