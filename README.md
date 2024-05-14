@@ -68,6 +68,16 @@ result = sql_client.fetch_one(query, params)
 You can configure the clients by setting environment variables or using a .env file. Refer to the respective client
 files for available configuration options.
 
+### SQL variables
+* MYSQL_DATABASE
+* MYSQL_HOST
+* MYSQL_PORT
+* MYSQL_USER
+* MYSQL_PASSWORD
+* MYSQL_POOL_SIZE           The size of the connection pool used, default 5 connections
+* MYSQL_POOL_RETRIES        The amount of retries when getting a connection from the pool fails, default 5 retries
+* MYSQL_POOL_WAIT_INTERVAL  The time between the retries, default 0.5 seconds
+
 ## License
 
 This project is licensed under the MIT License.

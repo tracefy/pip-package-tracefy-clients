@@ -32,20 +32,23 @@ class SQLClient:
             pool_size=int(os.getenv("MYSQL_POOL_SIZE", "5")),
             **db_config
         )
+
+        self.max_retries = int(os.getenv("MYSQL_POOL_RETRIES", "5"))
+        self.wait_interval = float(os.getenv("MYSQL_POOL_WAIT_INTERVAL", "0.5"))
     
-    def get_connection(self, max_retries=5, wait_interval=0.1):
+    def get_connection(self):
         """
         Get a connection from the connection pool
         """
         retries = 0
-        while retries < max_retries:
+        while retries < self.max_retries:
             try:
                 connection = self.pool.get_connection()
                 break
             except mysql.connector.errors.PoolError:
                 retries += 1
-                time.sleep(wait_interval)
-                print(f"connection pool exausted! Retries: {retries} with timeout: {wait_interval} sec")
+                time.sleep(self.wait_interval)
+                print(f"connection pool exausted! Retries: {retries} with timeout: {self.wait_interval} sec")
 
         cursor: MySQLCursorAbstract = connection.cursor(buffered=True, dictionary=True)
         return connection, cursor
