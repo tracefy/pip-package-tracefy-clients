@@ -35,7 +35,7 @@ class SQSClient:
 
     def get_compressed_message(self, queue):
         message = self.get_messages(queue)
-        decoded_data = base64.b64decode(message)
+        decoded_data = base64.b64decode(message.body)
         return json.loads(brotli.decompress(decoded_data).decode("utf-8"))
 
     def get_messages(self, queue, retries=10):
