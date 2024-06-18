@@ -1,5 +1,5 @@
 import os
-import gzip
+import brotli
 import base64
 import boto3
 import time
@@ -33,6 +33,11 @@ class SQSClient:
     def get_aws_secret_access_key(self) -> str:
         return os.getenv("AWS_SECRET_ACCESS_KEY")
 
+    def get_compressed_message(self, queue):
+        message = self.get_messages(queue)
+        decoded_data = base64.b64decode(message)
+        return json.loads(brotli.decompress(decoded_data).decode("utf-8"))
+
     def get_messages(self, queue, retries=10):
         for attempt in range(retries):
             try:
@@ -43,7 +48,9 @@ class SQSClient:
                 else:
                     raise
 
-    def add_to_queue(self, queue, data, retries=10):
+    def add_to_queue(self, queue, data: dict|list, retries=10):
+        if len(data) > 262144:
+            raise ValueError(f"Message size: {len(data)} exceeds SQS limit even after compression. Consider further data reduction or splitting.")
         for attempt in range(retries):
             try:
                 return queue.send_message(MessageBody=json.dumps(data))
@@ -53,11 +60,14 @@ class SQSClient:
                 else:
                     raise
 
-    def add_compressed_to_queue(self, queue, data, retries=10):
+    def add_compressed_to_queue(self, queue, data: dict|list, retries=10):
+        compressed = brotli.compress(json.dumps(data).encode('utf-8'))
+        base_data = base64.b64encode(compressed).decode()
+        if len(base_data) > 262144:
+            raise ValueError(f"Message size: {len(base_data)} exceeds SQS limit even after compression. Consider further data reduction or splitting.")
+
         for attempt in range(retries):
             try:
-                compressed = gzip.compress(json.dumps(data).encode('utf-8'))
-                base_data = base64.b64encode(compressed).decode()
                 return queue.send_message(MessageBody=base_data)
             except ConnectionClosedError:
                 if attempt < retries - 1:
