@@ -34,9 +34,16 @@ class SQSClient:
         return os.getenv("AWS_SECRET_ACCESS_KEY")
 
     def get_compressed_message(self, queue):
-        message = self.get_messages(queue)
-        decoded_data = base64.b64decode(message.body)
-        return json.loads(brotli.decompress(decoded_data).decode("utf-8"))
+        messages = self.get_messages(queue)
+        if not messages:
+            return []
+
+        decoded_messages = []
+        for message in messages:
+            decoded_data = base64.b64decode(message.body)
+            decoded_messages.append(json.loads(brotli.decompress(decoded_data).decode("utf-8")))
+        return decoded_messages
+
 
     def get_messages(self, queue, retries=10):
         for attempt in range(retries):
