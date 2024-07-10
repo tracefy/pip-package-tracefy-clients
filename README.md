@@ -63,6 +63,33 @@ params = ("john_doe",)
 result = sql_client.fetch_one(query, params)
 ```
 
+### SQS Client
+the SQSClient class creates a boto3 resource and a queue object that is used to receive and send messages to SQS
+#### SQS variables
+* AWS_SQS_ENDPOINT_URL
+* AWS_REGION
+* AWS_ACCESS_KEY_ID
+* AWS_SECRET_ACCESS_KEY
+```python
+from TracefyClients.sql_client import SQSClient
+
+# Initialize the SQS client
+sqs_client = SQSClient()
+
+# get amount of messsages in the queue
+num_messages = sqs_client.messages_in_queue()
+# Loop through the amount of messages in the queue and decompress_message
+for _ in range(num_messages):
+    msg = sqs_client.get_messages()[0]
+    data = sqs_client.decompress_message(msg)
+    do_something_special_with_msg(data)
+
+    #Be sure to remove the message when done
+    msg.delete()
+
+```
+
+
 ## Configuration
 
 You can configure the clients by setting environment variables or using a .env file. Refer to the respective client
