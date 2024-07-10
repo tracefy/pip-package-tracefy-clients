@@ -64,7 +64,7 @@ result = sql_client.fetch_one(query, params)
 ```
 
 ### SQS Client
-the SQSClient class creates a boto3 resource and a queue object that is used to receive and send messages to SQS
+The SQSClient class creates a boto3 resource and a queue object that is used to receive and send messages to SQS
 #### SQS variables
 * AWS_SQS_ENDPOINT_URL
 * AWS_REGION
