@@ -22,7 +22,7 @@ class SQSClient:
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
         )
-        self.queue: Queue = self.sqs.create_queue(QueueName=queue_name, Attributes={"DelaySeconds": 5})
+        self.queue: Queue = self.sqs.create_queue(QueueName=queue_name, Attributes={"DelaySeconds": "5"})
 
     def decompress_message(self, message: Message) -> dict:
         decoded_data = base64.b64decode(message.body)
