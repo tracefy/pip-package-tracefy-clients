@@ -17,7 +17,7 @@ class SQSClient:
     def __init__(self, queue_name: str):
         self.sqs = boto3.resource(
             'sqs',
-            endpoint_url=("AWS_SQS_ENDPOINT_URL", "https://sqs.eu-central-1.amazonaws.com"),
+            endpoint_url=os.getenv("AWS_SQS_ENDPOINT_URL", "https://sqs.eu-central-1.amazonaws.com"),
             region_name=os.getenv("AWS_REGION", "eu-central-1"),
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
