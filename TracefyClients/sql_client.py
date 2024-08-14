@@ -14,16 +14,16 @@ logger = get_logger("sql_client")
 
 class SQLClient:
 
-    def __init__(self):
+    def __init__(self, db_config: dict|None=None):
 
-        db_config = {
-            "database": os.getenv("MYSQL_DATABASE", "api"),
-            "host": os.getenv("MYSQL_HOST", "localhost"),
-            "port": int(os.getenv("MYSQL_PORT", "3306")),
-            "user": os.getenv("MYSQL_USER", "mysql"),
-            "password": os.getenv("MYSQL_PASSWORD", "mysql"),
-
-        }
+        if not db_config: 
+            db_config = {
+                "database": os.getenv("MYSQL_DATABASE", "api"),
+                "host": os.getenv("MYSQL_HOST", "localhost"),
+                "port": int(os.getenv("MYSQL_PORT", "3306")),
+                "user": os.getenv("MYSQL_USER", "mysql"),
+                "password": os.getenv("MYSQL_PASSWORD", "mysql"),
+            }
 
         pool_name = f"pool_{random.randint(1,100)}" # get a random name
 
