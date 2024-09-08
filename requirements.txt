@@ -3,11 +3,15 @@ Flask-Cors==5.0.0
 python-dotenv==1.0.1
 sentry-sdk==2.13.0
 marshmallow==3.22.0
-pytest==8.3.2
-boto3==1.35.13
-boto3-type-annotations==0.3.1
+boto3==1.35.14
+botocore==1.35.14
 mysql-connector-python==9.0.0
 requests==2.32.3
 redis==5.0.8
 pymongo==4.8.0
 Brotli==1.1.0
+# typing
+boto3-stubs==1.35.14
+boto3-stubs[secretsmanager]==1.35.14
+types-Flask-Cors==5.0.0.20240902
+types-requests==2.32.0.20240905

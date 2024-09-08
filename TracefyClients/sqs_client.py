@@ -3,7 +3,7 @@ import brotli
 import base64
 import boto3
 import time
-from boto3_type_annotations.sqs import Message, Queue
+from mypy_boto3_sqs.service_resource import Message, Queue
 from botocore.exceptions import ConnectionClosedError
 from boto3.resources.base import ServiceResource
 import json
