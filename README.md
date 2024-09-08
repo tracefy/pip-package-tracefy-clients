@@ -10,7 +10,7 @@ You can install TracefyClients using pip:
 
 ```bash
 pip install TracefyClients
-``` 
+```
 
 Make sure to have the required dependencies listed in requirements.txt installed as well.
 
@@ -89,6 +89,25 @@ for _ in range(num_messages):
 
 ```
 
+### Secretsmanager environment loader
+The secretsmanager utiliy module lets you load your secrets into your environment at the start of your application
+
+```python
+from TracefyClients.secretsmanager import secretsmanager_loadenv
+
+if __name__ == "__main__":
+    # Using AWS_SECRETSMANAGER_SECRET_IDS env variable e.g. AWS_SECRETSMANAGER_SECRET_IDS="secret1,secret2"
+    # The secrets need to be a JSON object of key value pairs, where each value is strictly a string (otherwise a Exception is thrown)
+    # Example secret value: { "MYSQL_USER": "example-user", "MYSQL_PASSWORD": "example-password" }
+    # region_name can be excluded if AWS_DEFAULT_REGION is defined
+    secretsmanager_loadenv(region_name="eu-central-1")
+
+    # Or you can pass the secret names directly (both simple name or arn are supported)
+    secretsmanager_loadenv(secrets=["secret1", "secret2"], region_name="eu-central-1")
+
+    # Start orther clients that depend on those environment variables
+    sqs_client = SQSClient()
+```
 
 ## Configuration
 
