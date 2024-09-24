@@ -3,7 +3,7 @@ Flask-Cors==5.0.0
 python-dotenv==1.0.1
 sentry-sdk==2.13.0
 marshmallow==3.22.0
-boto3==1.35.14
+boto3==1.35.25
 botocore==1.35.14
 mysql-connector-python==9.0.0
 requests==2.32.3
