@@ -84,6 +84,21 @@ class SQLClient:
 
         self.close_connection(connection, cursor)
 
+    def execute_transaction(self, query_list: list[str], params: list[tuple]):
+        connection, cursor = self.get_connection()
+        results = []
+        try:
+            for query, param in zip(query_list, params):
+                result = cursor.execute(query, param)
+                results.append(result)
+            connection.commit()
+            self.log(cursor)
+        except mysql.connector.Error as e:
+            connection.rollback()
+            raise e
+        finally:
+            self.close_connection(connection, cursor)
+        return results
 
     def fetch_all(self, query: str, params=()):
         connection, cursor = self.get_connection()
