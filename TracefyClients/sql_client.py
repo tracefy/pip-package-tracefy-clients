@@ -48,7 +48,7 @@ class SQLClient:
             except mysql.connector.errors.PoolError:
                 retries += 1
                 time.sleep(self.wait_interval)
-                print(f"connection pool exausted! Retries: {retries} with timeout: {self.wait_interval} sec")
+                print(f"connection pool exhausted! Retries: {retries} with timeout: {self.wait_interval} sec")
 
         cursor: MySQLCursorAbstract = connection.cursor(buffered=True, dictionary=True)
         return connection, cursor
