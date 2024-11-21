@@ -10,8 +10,8 @@ class Logging:
         Initialize a logger with a given name and configuration.
         :param name: Name of the logger.
         """
-        debug = os.getenv("DEBUG", False).lower() == "true"
-        self.is_testing = os.environ.get("TESTING", False).lower() == "true"
+        debug = os.getenv("DEBUG", False)
+        self.is_testing = os.environ.get("TESTING", False)
         self.log_level = logging.DEBUG if debug else logging.INFO
 
         if not self.is_testing:
