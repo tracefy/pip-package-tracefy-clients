@@ -38,7 +38,7 @@ class FlaskClient:
     def get_client(self):
         if not self.get_debug():
             log = logging.getLogger('werkzeug')
-            log.setLevel(logging.ERROR)
+            log.setLevel(logging.INFO)
         app = Flask(__name__)
         CORS(app)
         if not self.get_debug():
